@@ -115,7 +115,7 @@ fun createOkHttpClient(
 ): OkHttpClient {
     val httpClient = OkHttpClient.Builder()
 
-    httpClient.retryOnConnectionFailure(false)
+    httpClient.retryOnConnectionFailure(true)
     httpClient.connectTimeout(300, TimeUnit.SECONDS)
     httpClient.readTimeout(300, TimeUnit.SECONDS)
     httpClient.writeTimeout(300, TimeUnit.SECONDS)
@@ -156,7 +156,11 @@ fun createOkHttpClient(
         var response = chain.proceed(chain.request())
 
         if (response.request().url().encodedPath().contains("/avatar/")) {
-            AvatarStatusCodeHolder.getInstance().statusCode = response.code()
+            if (response.header("x-nc-iscustomavatar", "0") == "1") {
+                AvatarStatusCodeHolder.getInstance().statusCode = response.code()
+            } else  {
+                AvatarStatusCodeHolder.getInstance().statusCode = response.code()
+            }
 
             if (response.code() == 201) {
                 response = response.newBuilder().code(200).message("OK").build()

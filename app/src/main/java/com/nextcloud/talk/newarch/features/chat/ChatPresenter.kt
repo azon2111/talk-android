@@ -6,7 +6,9 @@ import android.graphics.drawable.LayerDrawable
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import coil.api.loadAny
 import coil.api.newLoadBuilder
 import com.amulyakhare.textdrawable.TextDrawable
@@ -14,6 +16,7 @@ import com.nextcloud.talk.R
 import com.nextcloud.talk.models.json.chat.ChatMessage
 import com.nextcloud.talk.newarch.features.chat.interfaces.ImageLoaderInterface
 import com.nextcloud.talk.newarch.local.models.other.ChatMessageStatus
+import com.nextcloud.talk.newarch.utils.dp
 import com.nextcloud.talk.utils.DisplayUtils
 import com.nextcloud.talk.utils.DrawableUtils.getDrawableResourceIdForMimeType
 import com.nextcloud.talk.utils.TextMatchers
@@ -22,7 +25,6 @@ import com.otaliastudios.elements.Page
 import com.otaliastudios.elements.Presenter
 import com.otaliastudios.elements.extensions.HeaderSource
 import com.stfalcon.chatkit.utils.DateFormatter
-import com.vanniktech.emoji.EmojiUtils
 import kotlinx.android.synthetic.main.item_message_quote.view.*
 import kotlinx.android.synthetic.main.rv_chat_item.view.*
 import kotlinx.android.synthetic.main.rv_chat_system_item.view.*
@@ -70,12 +72,19 @@ open class ChatPresenter<T : Any>(context: Context, private val onElementClickPa
                     if (elementType == ChatElementTypes.CHAT_MESSAGE) {
                         var shouldShowNameAndAvatar = true
                         val previousElement = getAdapter().elementAt(holder.adapterPosition - 1)
+                        val isOutgoingMessage = it.actorId == it.activeUser?.userId
+                        var isGrouped = false
+                        if (isOutgoingMessage) {
+                            shouldShowNameAndAvatar = false
+                        }
+
                         if (previousElement != null && previousElement.element.data != null && previousElement.element.data is ChatElement) {
                             val previousChatElement = previousElement.element.data as ChatElement
                             if (previousChatElement.elementType == ChatElementTypes.CHAT_MESSAGE) {
                                 val previousChatMessage = previousChatElement.data as ChatMessage
                                 if (previousChatMessage.actorId == it.actorId) {
                                     shouldShowNameAndAvatar = false
+                                    isGrouped = true
                                 }
                             }
                         }
@@ -87,12 +96,14 @@ open class ChatPresenter<T : Any>(context: Context, private val onElementClickPa
                         if (TextMatchers.isMessageWithSingleEmoticonOnly(it.text)) {
                             holder.itemView.chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
                         } else {
-                            holder.itemView.chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                            holder.itemView.chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
                         }
 
                         if (shouldShowNameAndAvatar) {
                             holder.itemView.authorLayout.isVisible = true
-                            holder.itemView.authorName?.text = it.actorDisplayName
+                            holder.itemView.authorName.isVisible = true
+
+                            holder.itemView.authorName?.text = if (it.user.name.isNotEmpty()) it.user.name else context.resources.getText(R.string.nc_guest)
                             if (it.actorType == "bots" && it.actorId == "changelog") {
                                 val layers = arrayOfNulls<Drawable>(2)
                                 layers[0] = context.getDrawable(R.drawable.ic_launcher_background)
@@ -103,19 +114,56 @@ open class ChatPresenter<T : Any>(context: Context, private val onElementClickPa
                             } else if (it.actorType == "bots") {
                                 val drawable = TextDrawable.builder()
                                         .beginConfig()
+                                        .width(24.dp)
+                                        .height(24.dp)
                                         .bold()
                                         .endConfig()
-                                        .buildRound(
-                                                ">",
+                                        .buildRect(
+                                                ">_",
                                                 context.resources.getColor(R.color.black)
                                         )
-                                val loadBuilder = imageLoader.getImageLoader().newLoadBuilder(context).target(holder.itemView.authorAvatar).data(DisplayUtils.getRoundedDrawable(drawable))
-                                imageLoader.getImageLoader().load(loadBuilder.build())
+                                holder.itemView.authorAvatar.loadAny(drawable, imageLoader.getImageLoader())
                             } else {
                                 imageLoader.loadImage(holder.itemView.authorAvatar, it.user.avatar)
                             }
                         } else {
                             holder.itemView.authorLayout.isVisible = false
+                            holder.itemView.authorName.isVisible = false
+                        }
+
+                        val messageLayoutParams = holder.itemView.messageLayout.layoutParams as RelativeLayout.LayoutParams
+
+                        if (isOutgoingMessage) {
+                            messageLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_END, 1)
+                            messageLayoutParams.marginStart = 40.dp
+                        } else {
+                            messageLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_END)
+                            messageLayoutParams.marginEnd = 40.dp
+                        }
+
+
+                        if (isGrouped) {
+
+                            if (isOutgoingMessage) {
+                                messageLayoutParams.marginEnd = 8.dp
+                                holder.itemView.messageLayout.background = context.resources.getDrawable(R.drawable.outgoing_grouped_message_background)
+                            } else {
+                                messageLayoutParams.marginStart = 40.dp
+                                holder.itemView.messageLayout.background = context.resources.getDrawable(R.drawable.incoming_grouped_message_background)
+                            }
+                            holder.itemView.messageLayout.layoutParams = messageLayoutParams
+
+                        } else {
+
+                            if (isOutgoingMessage) {
+                                messageLayoutParams.marginEnd = 8.dp
+                                holder.itemView.messageLayout.background = context.resources.getDrawable(R.drawable.outgoing_message_background)
+                            } else {
+                                messageLayoutParams.marginStart = 0
+                                holder.itemView.messageLayout.background = context.resources.getDrawable(R.drawable.incoming_message_background)
+                            }
+
+                            holder.itemView.messageLayout.layoutParams = messageLayoutParams
                         }
 
                         it.parentMessage?.let { parentMessage ->
@@ -156,9 +204,14 @@ open class ChatPresenter<T : Any>(context: Context, private val onElementClickPa
                             }
 
                             imageLoader.loadImage(holder.itemView.quotedUserAvatar, parentMessage.user.avatar)
-                            holder.itemView.quotedAuthor.text = parentMessage.user.name
+                            holder.itemView.quotedAuthor.text = if (parentMessage.user.name.isNotEmpty()) parentMessage.user.name else context.resources.getText(R.string.nc_guest)
                             holder.itemView.quotedChatText.text = parentMessage.text
                             holder.itemView.quotedMessageTime?.text = DateFormatter.format(it.createdAt, DateFormatter.Template.TIME)
+                            if (isOutgoingMessage) {
+                                holder.itemView.quoteColoredView.setBackgroundColor(context.resources.getColor(R.color.bg_message_list_incoming_bubble))
+                            } else {
+                                holder.itemView.quoteColoredView.setBackgroundColor(context.resources.getColor(R.color.bg_message_list_outcoming_bubble))
+                            }
                         } ?: run {
                             holder.itemView.quotedMessageLayout.isVisible = false
                         }

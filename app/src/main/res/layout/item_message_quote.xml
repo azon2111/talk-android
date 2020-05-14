@@ -5,7 +5,8 @@
     android:id="@+id/quotedMessageLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp">
+    android:clipToPadding="true"
+    android:layout_marginVertical="2dp">
 
     <View
         android:id="@+id/quoteColoredView"
@@ -61,8 +62,9 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@id/quotedAuthor"
             android:layout_below="@id/quotedPreviewImage"
+            android:textIsSelectable="false"
             android:autoLink="all"
-            android:textSize="12sp"
+            android:textSize="14sp"
             tools:text="Just another chat message" />
 
         <TextView
@@ -72,7 +74,7 @@
             android:layout_below="@id/quotedChatText"
             android:layout_alignParentEnd="true"
             android:textAlignment="textEnd"
-            android:textSize="10sp"
+            android:textSize="12sp"
             tools:text="12:30" />
 
     </RelativeLayout>

@@ -23,6 +23,7 @@
 
 <resources>
     <bool name="is_night">true</bool>
+    <bool name="status_bar_light">false</bool>
 
     <color name="conversation_item_header">#9FBDCC</color>
     <!--<color name="conversation_item_header">#CFCFCF</color>-->
@@ -40,7 +41,7 @@
     <color name="bg_selected_participant_clear_icon">#EFEFEF</color>
     <color name="bg_message_list_incoming_bubble">#484848</color>
     <color name="bg_message_list_outcoming_bubble">#003F62</color>
-
+    <color name="fg_inverse">#222222</color>
 
     <color name="emoji_background">#313031</color>
     <color name="emoji_divider">#15FFFFFF</color>
