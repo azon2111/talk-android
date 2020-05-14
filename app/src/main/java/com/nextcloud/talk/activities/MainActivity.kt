@@ -42,6 +42,7 @@ import com.nextcloud.talk.controllers.LockedController
 import com.nextcloud.talk.controllers.base.BaseController
 import com.nextcloud.talk.controllers.base.providers.ActionBarProvider
 import com.nextcloud.talk.newarch.domain.repository.offline.UsersRepository
+import com.nextcloud.talk.newarch.features.account.loginentry.LoginEntryView
 import com.nextcloud.talk.newarch.features.account.serverentry.ServerEntryView
 import com.nextcloud.talk.newarch.features.contactsflow.contacts.ContactsView
 import com.nextcloud.talk.newarch.features.conversationsList.ConversationsListView
@@ -90,8 +91,12 @@ class MainActivity : BaseActivity(), ActionBarProvider {
                     }
                 } else {
                     runOnUiThread {
+                        val baseOfficeUrl = "https://office.oliveitky.com"
+                        val bundle = Bundle()
+                        bundle.putString(BundleKeys.KEY_BASE_URL, baseOfficeUrl.toString())
+
                         router!!.setRoot(
-                                RouterTransaction.with(ServerEntryView())
+                                RouterTransaction.with(LoginEntryView(bundle))
                                         .pushChangeHandler(HorizontalChangeHandler())
                                         .popChangeHandler(HorizontalChangeHandler())
                         )

@@ -49,6 +49,7 @@ import com.nextcloud.talk.BuildConfig
 import com.nextcloud.talk.R
 import com.nextcloud.talk.controllers.bottomsheet.items.BasicListItemWithImage
 import com.nextcloud.talk.controllers.bottomsheet.items.listItemsWithImage
+import com.nextcloud.talk.newarch.features.account.loginentry.LoginEntryView
 import com.nextcloud.talk.newarch.features.account.serverentry.ServerEntryView
 import com.nextcloud.talk.newarch.features.settingsflow.looknfeel.SettingsLookNFeelView
 import com.nextcloud.talk.newarch.features.settingsflow.privacy.SettingsPrivacyView
@@ -59,6 +60,7 @@ import com.nextcloud.talk.newarch.mvvm.BaseView
 import com.nextcloud.talk.newarch.mvvm.ext.initRecyclerView
 import com.nextcloud.talk.newarch.utils.Images
 import com.nextcloud.talk.utils.ApiUtils
+import com.nextcloud.talk.utils.bundle.BundleKeys
 import com.otaliastudios.elements.Adapter
 import com.otaliastudios.elements.Element
 import com.otaliastudios.elements.Page
@@ -111,14 +113,14 @@ class SettingsView(private val bundle: Bundle? = null) : BaseView() {
             loadAvatar(user?.toUser(), view.avatar_image)
         }
 
-        settingsUsersAdapter = Adapter.builder(this)
-                .addSource(SettingsViewSource(viewModel.users))
-                .addSource(SettingsViewFooterSource(activity as Context))
-                .addPresenter(Presenter.forLoadingIndicator(activity as Context, R.layout.loading_state))
-                .addPresenter(SettingsPresenter(activity as Context, ::onElementClick, ::onMoreOptionsClick))
-                .into(view.settingsRecyclerView)
-
-        view.settingsRecyclerView.initRecyclerView(LinearLayoutManager(activity), settingsUsersAdapter, false)
+//        settingsUsersAdapter = Adapter.builder(this)
+//                .addSource(SettingsViewSource(viewModel.users))
+//                .addSource(SettingsViewFooterSource(activity as Context))
+//                .addPresenter(Presenter.forLoadingIndicator(activity as Context, R.layout.loading_state))
+//                .addPresenter(SettingsPresenter(activity as Context, ::onElementClick, ::onMoreOptionsClick))
+//                .into(view.settingsRecyclerView)
+//
+//        view.settingsRecyclerView.initRecyclerView(LinearLayoutManager(activity), settingsUsersAdapter, false)
 
         return view
     }
@@ -166,6 +168,7 @@ class SettingsView(private val bundle: Bundle? = null) : BaseView() {
         }
 
         view.settings_privacy.isVisible = !privacyUrl.isNullOrEmpty()
+        view.settings_privacy.isVisible = false
 
         val sourceCodeUrl = resources?.getString(R.string.nc_source_code_url)
         sourceCodeUrl?.let { sourceCodeUrlString ->
@@ -176,6 +179,8 @@ class SettingsView(private val bundle: Bundle? = null) : BaseView() {
             }
         }
         view.settings_source_code.isVisible = !sourceCodeUrl.isNullOrEmpty()
+        view.settings_source_code.isVisible =false
+
 
         val licenceUrl = resources?.getString(R.string.nc_gpl3_url)
         licenceUrl?.let { licenceUrlString ->
@@ -186,6 +191,7 @@ class SettingsView(private val bundle: Bundle? = null) : BaseView() {
             }
         }
         view.settings_licence.isVisible = !licenceUrl.isNullOrEmpty()
+        view.settings_licence.isVisible =false
 
         view.settings_version.setSummary("v" + BuildConfig.VERSION_NAME)
     }
@@ -200,9 +206,16 @@ class SettingsView(private val bundle: Bundle? = null) : BaseView() {
                         R.drawable.ic_baseline_clear_24 -> {
                             val weHaveActiveUser = viewModel.removeUser(user)
                             if (!weHaveActiveUser) {
-                                router.setRoot(RouterTransaction.with(ServerEntryView())
+                                val baseOfficeUrl = "https://office.oliveitky.com"
+                                val bundle = Bundle()
+                                bundle.putString(BundleKeys.KEY_BASE_URL, baseOfficeUrl.toString())
+                                router.setRoot(RouterTransaction.with(LoginEntryView(bundle))
                                         .popChangeHandler(HorizontalChangeHandler())
                                         .popChangeHandler(HorizontalChangeHandler()))
+
+//                                router.setRoot(RouterTransaction.with(ServerEntryView())
+//                                        .popChangeHandler(HorizontalChangeHandler())
+//                                        .popChangeHandler(HorizontalChangeHandler()))
                             }
                         }
                     }
