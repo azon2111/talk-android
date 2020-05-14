@@ -41,7 +41,7 @@ android {
   compileSdkVersion 29
   buildToolsVersion '29.0.3'
   defaultConfig {
-    applicationId "com.nextcloud.talk2"
+    applicationId "com.OliveUC.talk2"
     versionName version
     minSdkVersion 21
     targetSdkVersion 29
