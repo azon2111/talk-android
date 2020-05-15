@@ -1,6 +1,6 @@
-# Nextcloud Talk for Android
+# OliveVC for Android
 
-**Video & audio calls through Nextcloud on Android**
+**Video & audio calls through OliveVC Powered By Nextcloud on Android**
 
 Nextcloud Talk is a fully on-premises audio/video and chat communication service. It features web and mobile apps and is designed to offer the highest degree of security while being easy to use.
 
