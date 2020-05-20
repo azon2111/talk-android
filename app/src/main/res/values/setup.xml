@@ -27,7 +27,7 @@
 
     <!-- App label shown on the home screen -->
     <string name="nc_app_label">OliveUC</string>
-    <string name="nc_app_name">OliveUC Talk</string>
+    <string name="nc_app_name">OliveUC</string>
     <string name="nc_server_product_name">OliveUC</string>
 
     <string name="nc_push_server_url" translatable="false">https://push-notifications.nextcloud.com</string>

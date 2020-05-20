@@ -30,15 +30,18 @@
   <group android:scaleX="0.08035714"
       android:scaleY="0.08035714">
       <path android:fillType="evenOdd"
-          android:pathData="M0,0h1344v1344h-1344z" android:strokeLineJoin="round">
-          <aapt:attr name="android:fillColor">
-              <gradient android:endX="1343.9999"
-                  android:endY="1.2959057E-4" android:startX="163.34073"
-                  android:startY="1344.0002" android:type="linear">
-                  <item android:color="#FF0082C9" android:offset="0"/>
-                  <item android:color="#FF1CAFFF" android:offset="1"/>
-              </gradient>
-          </aapt:attr>
-      </path>
+          android:fillColor="#FFFFFF"
+          android:pathData="M0,0h1344v1344h-1344z" android:strokeLineJoin="round"/>
+<!--      <path android:fillType="evenOdd"-->
+<!--          android:pathData="M0,0h1344v1344h-1344z" android:strokeLineJoin="round">-->
+<!--          <aapt:attr name="android:fillColor">-->
+<!--              <gradient android:endX="1343.9999"-->
+<!--                  android:endY="1.2959057E-4" android:startX="163.34073"-->
+<!--                  android:startY="1344.0002" android:type="linear">-->
+<!--                  <item android:color="#FF0082C9" android:offset="0"/>-->
+<!--                  <item android:color="#FF1CAFFF" android:offset="1"/>-->
+<!--              </gradient>-->
+<!--          </aapt:attr>-->
+<!--      </path>-->
   </group>
 </vector>
